@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>填写报名表</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <main class="page">
+    <div class="card" id="formCard">
+      <div class="brand">
+        <div class="logo">📝</div>
+        <h1 id="activityName">活动报名</h1>
+        <p>请填写报名信息，带 <span style="color:var(--danger)">*</span> 为必填项</p>
+      </div>
+
+      <div class="alert info show" id="codeTip"></div>
+      <div class="alert" id="alert" role="alert"></div>
+
+      <form id="regForm" novalidate>
+        <label class="req" for="name">姓名</label>
+        <input id="name" name="name" type="text" maxlength="30" placeholder="请输入真实姓名" />
+        <div class="field-error" data-for="name"></div>
+
+        <label class="req" for="phone">手机号</label>
+        <input id="phone" name="phone" type="tel" maxlength="11" placeholder="用于接收活动通知" />
+        <div class="field-error" data-for="phone"></div>
+
+        <label for="email">邮箱</label>
+        <input id="email" name="email" type="email" maxlength="100" placeholder="选填" />
+        <div class="field-error" data-for="email"></div>
+
+        <label for="company">单位 / 公司</label>
+        <input id="company" name="company" type="text" maxlength="80" placeholder="选填" />
+        <div class="field-error" data-for="company"></div>
+
+        <label for="remark">备注</label>
+        <textarea id="remark" name="remark" maxlength="300" placeholder="选填，如饮食禁忌、其他需求"></textarea>
+        <div class="field-error" data-for="remark"></div>
+
+        <button class="btn" id="submitBtn" type="submit">提交报名</button>
+      </form>
+    </div>
+
+    <div class="card" id="successCard" style="display:none">
+      <div class="success-box">
+        <div class="icon">✓</div>
+        <h1 style="font-size:20px;margin-bottom:8px">报名成功</h1>
+        <p class="muted" id="successMsg"></p>
+        <p style="margin-top:18px;font-size:13px;color:var(--text-sub)">
+          报名编号：<span class="code-mono" id="regId"></span>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/register.js"></script>
+</body>
+</html>

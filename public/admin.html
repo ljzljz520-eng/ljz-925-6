@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>管理后台 · 邀请码与报名</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- 登录视图 -->
+  <main class="page" id="loginView">
+    <div class="card">
+      <div class="brand">
+        <div class="logo">🔐</div>
+        <h1>管理后台登录</h1>
+        <p>邀请码生成、状态统计与名单导出</p>
+      </div>
+      <div class="alert" id="loginAlert"></div>
+      <form id="loginForm" novalidate>
+        <label class="req" for="loginUser">管理员账号</label>
+        <input id="loginUser" type="text" autocomplete="username" placeholder="admin" />
+        <label class="req" for="loginPass">密码</label>
+        <input id="loginPass" type="password" autocomplete="current-password" placeholder="请输入密码" />
+        <button class="btn" id="loginBtn" type="submit">登 录</button>
+      </form>
+      <p class="muted" style="margin-top:16px;text-align:center">
+        默认账号 admin / admin123456（可用环境变量覆盖，请尽快修改）
+      </p>
+    </div>
+  </main>
+
+  <!-- 后台主视图 -->
+  <div id="dashView" style="display:none">
+    <header class="admin-header">
+      <div class="title">🎟️ 活动报名管理后台</div>
+      <div class="user">
+        <span>👤 <span id="currentUser"></span></span>
+        <button class="btn small secondary" id="logoutBtn">退出登录</button>
+      </div>
+    </header>
+
+    <main class="page wide" style="padding-top:8px">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-tab="dashboard">概览统计</button>
+        <button class="tab" data-tab="codes">邀请码管理</button>
+        <button class="tab" data-tab="batches">生成批次</button>
+        <button class="tab" data-tab="registrations">报名名单</button>
+      </div>
+
+      <!-- 概览 -->
+      <section id="tab-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card total"><div class="num" id="stTotal">-</div><div class="label">邀请码总数</div></div>
+          <div class="stat-card unused"><div class="num" id="stUnused">-</div><div class="label">未使用</div></div>
+          <div class="stat-card used"><div class="num" id="stUsed">-</div><div class="label">已使用</div></div>
+          <div class="stat-card expired"><div class="num" id="stExpired">-</div><div class="label">已过期</div></div>
+          <div class="stat-card banned"><div class="num" id="stBanned">-</div><div class="label">已封禁</div></div>
+          <div class="stat-card used"><div class="num" id="stReg">-</div><div class="label">报名人数</div></div>
+        </div>
+        <div class="panel">
+          <h3>近 7 天报名趋势 <button class="btn small secondary" id="refreshStats">刷新</button></h3>
+          <div class="chart" id="trendChart"></div>
+        </div>
+      </section>
+
+      <!-- 邀请码管理 -->
+      <section id="tab-codes" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <label>状态</label>
+              <select id="codeState">
+                <option value="all">全部</option>
+                <option value="unused">未使用</option>
+                <option value="used">已使用</option>
+                <option value="expired">已过期</option>
+                <option value="banned">已封禁</option>
+              </select>
+            </div>
+            <div>
+              <label>批次号</label>
+              <input id="codeBatch" type="text" placeholder="按批次过滤" />
+            </div>
+            <div>
+              <label>码搜索</label>
+              <input id="codeKeyword" type="text" placeholder="输入部分码" />
+            </div>
+            <button class="btn small" id="codeSearchBtn" style="width:auto">查询</button>
+            <button class="btn small secondary" id="codeResetBtn" style="width:auto">重置</button>
+            <button class="btn small secondary" id="exportCodesBtn" style="width:auto;margin-left:auto">导出当前筛选 CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>邀请码</th>
+                  <th>状态</th>
+                  <th>批次</th>
+                  <th>创建时间</th>
+                  <th>过期时间</th>
+                  <th>使用时间</th>
+                  <th>报名人</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="codesTbody"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span id="codesInfo"></span>
+            <button class="btn small secondary" id="codesPrev">上一页</button>
+            <button class="btn small secondary" id="codesNext">下一页</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 批次 -->
+      <section id="tab-batches" style="display:none">
+        <div class="panel">
+          <h3>批量生成邀请码</h3>
+          <div class="form-row">
+            <div style="flex:0 0 130px">
+              <label class="req">生成数量</label>
+              <input id="genCount" type="number" min="1" max="1000" value="50" />
+            </div>
+            <div style="flex:0 0 150px">
+              <label class="req">有效期（天）</label>
+              <input id="genDays" type="number" min="1" max="3650" value="30" />
+            </div>
+            <div style="flex:1;min-width:180px">
+              <label>批次备注</label>
+              <input id="genRemark" type="text" maxlength="100" placeholder="如：渠道A线下发放" />
+            </div>
+            <button class="btn small" id="genBtn" style="width:auto;margin-bottom:0">生成</button>
+          </div>
+          <p class="hint" style="margin-top:8px">
+            单次最多 1000 个；有效期填 <code>-1</code> 表示永久有效。生成的码为 12 位，按 XXXX-XXXX-XXXX 展示。
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3>历史批次</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>批次号</th>
+                  <th>备注</th>
+                  <th>创建人</th>
+                  <th>数量</th>
+                  <th>未使用</th>
+                  <th>已使用</th>
+                  <th>已过期</th>
+                  <th>已封禁</th>
+                  <th>创建时间</th>
+                  <th>过期时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="batchesTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 报名名单 -->
+      <section id="tab-registrations" style="display:none">
+        <div class="panel">
+          <div class="toolbar">
+            <div>
+              <label>关键词</label>
+              <input id="regKeyword" type="text" placeholder="姓名/手机/邮箱/单位/码" />
+            </div>
+            <button class="btn small" id="regSearchBtn" style="width:auto">查询</button>
+            <button class="btn small secondary" id="regResetBtn" style="width:auto">重置</button>
+            <button class="btn small" id="exportRegBtn" style="width:auto;margin-left:auto">⬇ 导出报名名单 CSV</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>邀请码</th>
+                  <th>姓名</th>
+                  <th>手机号</th>
+                  <th>邮箱</th>
+                  <th>单位</th>
+                  <th class="wrap">备注</th>
+                  <th>报名时间</th>
+                </tr>
+              </thead>
+              <tbody id="regsTbody"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span id="regsInfo"></span>
+            <button class="btn small secondary" id="regsPrev">上一页</button>
+            <button class="btn small secondary" id="regsNext">下一页</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 批次码查看弹窗 -->
+  <div class="modal-mask" id="batchModal">
+    <div class="modal">
+      <header>
+        <span>批次 <span id="batchModalId"></span> 的邀请码</span>
+        <button class="close-x" id="batchModalClose">×</button>
+      </header>
+      <div class="body">
+        <div class="toolbar" style="margin-bottom:10px">
+          <button class="btn small secondary" id="copyCodesBtn" style="width:auto">复制全部</button>
+          <button class="btn small secondary" id="exportBatchBtn" style="width:auto">导出该批次 CSV</button>
+        </div>
+        <div class="code-list" id="batchModalCodes"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

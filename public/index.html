@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>活动报名 · 邀请码验证</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <main class="page">
+    <div class="card">
+      <div class="brand">
+        <div class="logo">🎟️</div>
+        <h1 id="activityName">活动报名</h1>
+        <p>本次活动采取邀请制，请输入您收到的邀请码</p>
+      </div>
+
+      <div id="alert" class="alert" role="alert"></div>
+
+      <form id="verifyForm" autocomplete="off" novalidate>
+        <label class="req" for="codeInput">邀请码</label>
+        <input
+          id="codeInput"
+          type="text"
+          maxlength="14"
+          inputmode="text"
+          autocomplete="one-time-code"
+          spellcheck="false"
+          placeholder="XXXX-XXXX-XXXX"
+          style="text-transform: uppercase; letter-spacing: 2px; font-family: ui-monospace, Menlo, monospace;"
+        />
+        <div id="codeError" class="field-error"></div>
+        <p class="hint">邀请码为 12 位字符，不区分大小写；一码仅限报名一次</p>
+        <button class="btn" id="submitBtn" type="submit">验证并进入报名</button>
+      </form>
+    </div>
+    <p class="muted" style="text-align:center;margin-top:16px">
+      没有邀请码？请联系活动主办方获取。<a href="/admin">管理员入口</a>
+    </p>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/verify.js"></script>
+</body>
+</html>

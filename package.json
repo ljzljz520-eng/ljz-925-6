@@ -1,0 +1,17 @@
+{
+  "name": "invite-register",
+  "version": "1.0.0",
+  "description": "活动报名邀请码系统：邀请码验码进入、后台批量生成与统计、名单导出",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "sql.js": "^1.14.2"
+  }
+}
